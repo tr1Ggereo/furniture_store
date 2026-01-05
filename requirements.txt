@@ -3,3 +3,4 @@ djangorestframework
 Pillow
 django-extensions
 django-ckeditor
+gunicorn>=21.2
