@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Меблі Івано-Франківськ - ReST.IF{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-24">
+    <div class="container mx-auto px-6">
+        <!-- Breadcrumbs -->
+        <nav class="flex mb-12 text-sm uppercase tracking-widest text-gray-400">
+            <a href="{% url 'catalog:category_list' %}" class="hover:text-brand-gold">Каталог</a>
+            <span class="mx-2">/</span>
+            {% with first_cat=product.categories.first %}
+            {% if first_cat %}
+            <a href="{% url 'catalog:category_detail' first_cat.slug %}" class="hover:text-brand-gold">
+                {{ first_cat.name }}
+            </a>
+            <span class="mx-2">/</span>
+            {% endif %}
+            {% endwith %}
+            <span class="text-brand-charcoal font-bold">
+                {{ product.name }}
+            </span>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <!-- Product Gallery -->
+            <div class="lg:col-span-7">
+                <div class="aspect-[4/3] bg-brand-cream relative overflow-hidden shadow-sm">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-brand-gold opacity-20 text-9xl">🛋️
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="lg:col-span-5 flex flex-col">
+                <h1 class="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight uppercase tracking-tighter">
+                    {{ product.name }}
+                </h1>
+
+                <div class="flex items-baseline mb-8">
+                    <span class="text-3xl font-bold text-brand-wood">ВІД {{ product.base_price }} ₴</span>
+                    <span class="ml-4 text-gray-400 text-sm italic">Базова вартість</span>
+                </div>
+
+                <div class="prose prose-sm text-gray-600 mb-10 leading-relaxed max-w-none">
+                    {{ product.description|safe }}
+                </div>
+
+                <div class="space-y-4 mb-12 border-t border-b border-gray-100 py-8">
+                    <div class="flex items-center text-sm">
+                        <span class="w-32 text-gray-400 uppercase tracking-widest font-medium">Місто:</span>
+                        <span class="text-brand-charcoal font-bold">Івано-Франківськ</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span class="w-32 text-gray-400 uppercase tracking-widest font-medium">Статус:</span>
+                        <span class="text-brand-gold font-bold">{% if product.is_customizable %}На замовлення{% else %}В
+                            наявності{% endif %}</span>
+                    </div>
+                </div>
+
+                <form action="{% url 'orders:order_create' %}" method="get" class="flex flex-col h-full">
+                    <input type="hidden" name="product" value="{{ product.id }}">
+
+                    {% if product.available_materials.all %}
+                    <div class="mb-12">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Оберіть матеріали:
+                        </h3>
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                            {% for material in product.available_materials.all %}
+                            <label class="relative cursor-pointer group">
+                                <input type="checkbox" name="material" value="{{ material.id }}" class="peer sr-only">
+                                <div
+                                    class="border-2 border-transparent peer-checked:border-brand-gold p-2 transition-all bg-white shadow-sm hover:shadow-md h-full">
+                                    <div class="aspect-square bg-gray-100 overflow-hidden mb-2">
+                                        {% if material.image %}
+                                        <img src="{{ material.image.url }}" alt="{{ material.name }}"
+                                            class="w-full h-full object-cover">
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-[10px] font-bold uppercase tracking-tighter text-center truncate">
+                                        {{ material.name }}
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <svg class="w-4 h-4 text-brand-gold" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 gap-4 mt-auto">
+                        <button type="submit"
+                            class="bg-brand-charcoal text-white text-center py-6 font-bold uppercase tracking-widest hover:bg-brand-gold transition-colors duration-300 shadow-lg">
+                            Швидка заявка
+                        </button>
+                        {% if product.is_customizable %}
+                        <a href="{% url 'orders:order_create' %}?product={{ product.id }}&customize=true"
+                            class="border-2 border-brand-charcoal text-brand-charcoal text-center py-6 font-bold uppercase tracking-widest hover:bg-brand-charcoal hover:text-white transition-colors duration-300">
+                            Налаштувати під себе
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if related_products %}
+        <div class="mt-32">
+            <h2
+                class="text-2xl font-serif font-bold mb-12 pb-4 border-b border-brand-gold inline-block uppercase tracking-widest">
+                Вам також може сподобатись</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {% for related in related_products %}
+                <div class="group bg-white p-4 shadow-sm hover:shadow-xl transition-all duration-500">
+                    <a href="{% url 'catalog:product_detail' related.slug %}"
+                        class="aspect-square bg-brand-cream overflow-hidden block mb-4">
+                        {% if related.image %}
+                        <img src="{{ related.image.url }}" alt="{{ related.name }}"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-brand-gold opacity-10 text-4xl">
+                            🛋️</div>
+                        {% endif %}
+                    </a>
+                    <h3
+                        class="font-bold text-sm uppercase tracking-widest group-hover:text-brand-gold transition-colors">
+                        <a href="{% url 'catalog:product_detail' related.slug %}">{{ related.name }}</a>
+                    </h3>
+                    <div class="text-gray-500 text-sm mt-2 font-bold">ВІД {{ related.base_price }} ₴</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

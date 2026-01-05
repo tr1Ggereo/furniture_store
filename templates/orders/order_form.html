@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Замовлення - ReST.IF{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-24 bg-brand-cream min-h-screen">
+    <div class="container mx-auto px-6 max-w-2xl">
+        <div class="bg-white p-10 md:p-16 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 text-9xl font-serif font-bold text-gray-50 opacity-10 select-none">
+                ReST</div>
+
+            <h1 class="text-3xl md:text-4xl font-serif font-bold mb-8 relative z-10">Оформити замовлення</h1>
+
+            {% if messages %}
+            <div class="mb-8 relative z-10">
+                {% for message in messages %}
+                <div
+                    class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-600 border border-green-200{% endif %} text-sm font-bold">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-8 relative z-10">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-2">
+                        <label
+                            class="block text-xs font-bold uppercase tracking-widest {% if form.name.errors %}text-red-500{% else %}text-gray-400{% endif %}">
+                            Ваше ім'я
+                        </label>
+                        <div class="{% if form.name.errors %}error-field{% endif %}">
+                            {{ form.name }}
+                        </div>
+                        {% for error in form.name.errors %}
+                        <p class="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="space-y-2">
+                        <label
+                            class="block text-xs font-bold uppercase tracking-widest {% if form.phone.errors %}text-red-500{% else %}text-gray-400{% endif %}">
+                            Телефон
+                        </label>
+                        <div class="{% if form.phone.errors %}error-field{% endif %}">
+                            {{ form.phone }}
+                        </div>
+                        {% for error in form.phone.errors %}
+                        <p class="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if is_product_order %}
+                <div class="space-y-2 pb-4 border-b border-gray-100">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400">Ви замовляєте
+                        товар:</label>
+                    <div class="text-xl font-bold text-brand-wood">
+                        {{ form.instance.product.name|default:product_name_from_get }}
+                    </div>
+                </div>
+                {% elif is_project_consultation %}
+                <div class="space-y-2 pb-4 border-b border-gray-100">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400">Обговорення
+                        проєкту:</label>
+                    <div class="text-xl font-bold text-brand-wood">
+                        {{ form.instance.project.title|default:project_name_from_get }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if is_customizing %}
+                <div class="space-y-8 py-6 border-b border-gray-100">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-brand-gold">Налаштування розмірів</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Ширина
+                                (мм)</label>
+                            {{ form.width }}
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Висота
+                                (мм)</label>
+                            {{ form.height }}
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Глибина
+                                (мм)</label>
+                            {{ form.depth }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if is_customizing or is_product_order %}
+                <div class="space-y-4 py-6 border-b border-gray-100">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <!-- Left: Materials (Multiple) -->
+                        <div class="space-y-4 border-r lg:border-gray-100 pr-5">
+                            <label class="block text-xs font-bold uppercase tracking-widest text-brand-gold">Оберіть
+                                Матеріал</label>
+                            <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar grid grid-cols-2 gap-3">
+                                {% for material in available_materials %}
+                                <label class="relative group cursor-pointer">
+                                    {% if material.id|slugify in selected_material_ids %}
+                                    <input type="checkbox" name="material" value="{{ material.id }}" class="peer hidden"
+                                        checked>
+                                    {% else %}
+                                    <input type="checkbox" name="material" value="{{ material.id }}"
+                                        class="peer hidden">
+                                    {% endif %}
+                                    <div
+                                        class="aspect-square bg-brand-cream overflow-hidden border-2 border-transparent peer-checked:border-brand-gold transition-all duration-300">
+                                        {% if material.image %}
+                                        <img src="{{ material.image.url }}" alt="{{ material.name }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        {% else %}
+                                        <div
+                                            class="w-full h-full flex items-center justify-center text-brand-gold opacity-10 text-2xl">
+                                            🛋️</div>
+                                        {% endif %}
+                                        <div
+                                            class="absolute inset-0 bg-brand-charcoal/0 group-hover:bg-brand-charcoal/5 peer-checked:bg-brand-charcoal/0 transition-all">
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="mt-2 text-[10px] font-bold uppercase tracking-tighter text-center peer-checked:text-brand-gold transition-colors leading-tight">
+                                        {{ material.name }}
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 bg-brand-gold text-white rounded-full p-1 opacity-0 peer-checked:opacity-100 transition-opacity z-10">
+                                        <svg class="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Right: Patterns (Single) -->
+                        <div class="space-y-4">
+                            <label class="block text-xs font-bold uppercase tracking-widest text-brand-gold">Оберіть
+                                Візерунок</label>
+                            <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar grid grid-cols-2 gap-3">
+                                {% for pattern in all_patterns %}
+                                <label class="relative group cursor-pointer">
+                                    {% if pattern.id|slugify == selected_pattern_id %}
+                                    <input type="radio" name="pattern" value="{{ pattern.id }}" class="peer hidden"
+                                        checked>
+                                    {% else %}
+                                    <input type="radio" name="pattern" value="{{ pattern.id }}" class="peer hidden">
+                                    {% endif %}
+                                    <div
+                                        class="aspect-square bg-brand-cream overflow-hidden border-2 border-transparent peer-checked:border-brand-gold transition-all duration-300">
+                                        <img src="{{ pattern.image.url }}" alt="{{ pattern.name }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        <div
+                                            class="absolute inset-0 bg-brand-charcoal/0 group-hover:bg-brand-charcoal/5 peer-checked:bg-brand-charcoal/0 transition-all">
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="mt-2 text-[10px] font-bold uppercase tracking-tighter text-center peer-checked:text-brand-gold transition-colors leading-tight">
+                                        {{ pattern.name }}
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 bg-brand-gold text-white rounded-full p-1 opacity-0 peer-checked:opacity-100 transition-opacity z-10">
+                                        <svg class="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="hidden">
+                    {{ form.product }}
+                    {{ form.project }}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400">Повідомлення</label>
+                    {{ form.message }}
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-brand-charcoal text-white py-6 font-bold uppercase tracking-widest hover:bg-brand-gold transition-all duration-500">
+                    {% if is_product_order %}
+                    Надіслати заявку
+                    {% elif is_project_consultation %}
+                    Обговорити проєкт
+                    {% else %}
+                    Отримати консультацію
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    input,
+    select,
+    textarea {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #F3F4F6;
+        padding: 1rem 0;
+        outline: none;
+        background: transparent;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #C5A059;
+    }
+
+    .error-field input {
+        border-color: #EF4444 !important;
+    }
+
+    .error-field input:focus {
+        border-color: #EF4444 !important;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #F9FAFB;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #C5A059;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #A68045;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} - Проєкт ReST.IF{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-24 min-h-screen">
+    <div class="container mx-auto px-6">
+        <!-- Breadcrumbs -->
+        <nav class="flex mb-12 text-sm uppercase tracking-widest text-gray-400">
+            <a href="/" class="hover:text-brand-gold">Головна</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'gallery:project_list' %}" class="hover:text-brand-gold">Галерея</a>
+            <span class="mx-2">/</span>
+            <span class="text-brand-charcoal font-bold">{{ project.title }}</span>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-20">
+            <!-- Content -->
+            <div class="lg:col-span-5">
+                <h1 class="text-4xl md:text-6xl font-serif font-bold mb-10 leading-none uppercase tracking-tighter">
+                    {{ project.title }}
+                </h1>
+                <div class="prose prose-lg text-gray-600 leading-relaxed max-w-none mb-12">
+                    {{ project.description|linebreaks }}
+                </div>
+
+                <div class="bg-brand-cream p-10 border-l-4 border-brand-gold">
+                    <h4 class="font-bold uppercase tracking-widest text-xs mb-4">Сподобався проєкт?</h4>
+                    <p class="text-sm text-gray-500 mb-8">Ми можемо реалізувати подібне рішення з урахуванням ваших
+                        розмірів та побажань.</p>
+                    <a href="{% url 'orders:order_create' %}?project={{ project.id }}"
+                        class="inline-block bg-brand-charcoal text-white px-8 py-4 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-brand-gold transition-colors">Обговорити
+                        проєкт</a>
+                </div>
+            </div>
+
+            <!-- Photos -->
+            <div class="lg:col-span-7 space-y-10">
+                <!-- Main Image -->
+                <div class="aspect-[4/3] bg-brand-cream overflow-hidden">
+                    <img src="{{ project.main_image.url }}" alt="{{ project.title }}"
+                        class="w-full h-full object-cover">
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {% for img in images %}
+                    <div class="aspect-square bg-brand-cream overflow-hidden group">
+                        <img src="{{ img.image.url }}" alt="{{ img.caption }}"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        {% if img.caption %}
+                        <div class="p-4 bg-white text-xs text-gray-400 italic">{{ img.caption }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends 'crm/base.html' %}
+
+{% block content %}
+<div class="mb-10">
+    <a href="{% url 'crm:dashboard' %}"
+        class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-brand-gold transition-colors flex items-center space-x-2 mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+            </path>
+        </svg>
+        <span>Назад до списку</span>
+    </a>
+    <h1 class="text-4xl font-serif font-bold text-white mb-2">
+        Замовлення #{{ order.id }}
+    </h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div class="lg:col-span-2 space-y-10">
+        <!-- Client Info -->
+        <div class="bg-brand-panel border border-white/5 rounded-2xl p-10 shadow-xl">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold mb-8">Інформація про клієнта</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">Ім'я</label>
+                    <div class="text-xl font-bold text-white">
+                        {{ order.name }}
+                    </div>
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">Телефон</label>
+                    <div class="text-xl font-bold text-white">
+                        {{ order.phone }}
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-white/5">
+                <label
+                    class="block text-[10px] text-gray-500 uppercase tracking-widest mb-4 font-bold">Повідомлення</label>
+                <div class="bg-white/5 p-6 rounded-xl text-gray-300 leading-relaxed italic">
+                    {% if order.message %}
+                    "{{ order.message }}"
+                    {% else %}
+                    <span class="opacity-30">Коментарі відсутні</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Info -->
+        {% if order.width or order.height or order.depth or order.material.all or order.pattern %}
+        <div class="bg-brand-panel border border-white/5 rounded-2xl p-10 shadow-xl">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold mb-8">Параметри виробу</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                {% if order.width %}
+                <div class="bg-white/5 p-4 rounded-xl text-center">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Ширина</div>
+                    <div class="text-xl font-bold text-white">
+                        {{ order.width }} мм
+                    </div>
+                </div>
+                {% endif %}
+                {% if order.height %}
+                <div class="bg-white/5 p-4 rounded-xl text-center">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Висота</div>
+                    <div class="text-xl font-bold text-white">
+                        {{ order.height }} мм
+                    </div>
+                </div>
+                {% endif %}
+                {% if order.depth %}
+                <div class="bg-white/5 p-4 rounded-xl text-center">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Глибина</div>
+                    <div class="text-xl font-bold text-white">
+                        {{ order.depth }} мм
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="space-y-8">
+                {% if order.material.all %}
+                <div>
+                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest mb-4 font-bold">Обрані
+                        матеріали</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {% for mat in order.material.all %}
+                        <div class="bg-brand-charcoal border border-white/5 p-3 rounded-xl">
+                            {% if mat.image %}
+                            <img src="{{ mat.image.url }}" class="w-full aspect-square object-cover rounded-lg mb-2">
+                            {% endif %}
+                            <div class="text-[10px] font-bold text-center uppercase tracking-tighter text-white">
+                                {{ mat.name }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if order.pattern %}
+                <div>
+                    <label class="block text-[10px] text-gray-500 uppercase tracking-widest mb-4 font-bold">Обраний
+                        візерунок</label>
+                    <div class="w-32 bg-brand-charcoal border border-white/5 p-3 rounded-xl mx-auto">
+                        {% if order.pattern.image %}
+                        <img src="{{ order.pattern.image.url }}"
+                            class="w-full aspect-square object-cover rounded-lg mb-2">
+                        {% endif %}
+                        <div class="text-[10px] font-bold text-center uppercase tracking-tighter text-white">
+                            {{ order.pattern.name }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="space-y-10">
+        <!-- Object Info -->
+        <div class="bg-brand-panel border border-white/5 rounded-2xl p-8 shadow-xl">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 font-bold">Об'єкт замовлення</h3>
+            {% if order.product %}
+            <div class="group relative aspect-video overflow-hidden rounded-xl bg-brand-charcoal mb-4">
+                {% if order.product.image %}
+                <img src="{{ order.product.image.url }}" class="w-full h-full object-cover opacity-60">
+                {% endif %}
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                    <div class="text-white font-bold text-lg leading-tight uppercase tracking-tighter">
+                        {{ order.product.name }}
+                    </div>
+                    <div class="text-brand-gold text-[10px] font-bold uppercase tracking-widest mt-2">Товар</div>
+                </div>
+            </div>
+            {% elif order.project %}
+            <div class="group relative aspect-video overflow-hidden rounded-xl bg-brand-charcoal mb-4">
+                {% if order.project.main_image %}
+                <img src="{{ order.project.main_image.url }}" class="w-full h-full object-cover opacity-60">
+                {% endif %}
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                    <div class="text-white font-bold text-lg leading-tight uppercase tracking-tighter">
+                        {{ order.project.title }}
+                    </div>
+                    <div class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-2">Проєкт</div>
+                </div>
+            </div>
+            {% else %}
+            <div
+                class="py-12 text-center text-gray-600 bg-brand-charcoal rounded-xl border border-dashed border-white/5">
+                <div class="text-3xl mb-2">📥</div>
+                <div class="text-xs font-bold uppercase tracking-widest">Загальна заявка</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Status Card -->
+        <div class="bg-brand-panel border border-white/5 rounded-2xl p-8 shadow-xl">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 font-bold">Керування статусом
+            </h3>
+            <form action="{% url 'crm:order_status_update' order.pk %}" method="post" class="space-y-4">
+                {% csrf_token %}
+                <select name="status"
+                    class="w-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest rounded-xl px-4 py-4 text-white focus:ring-1 focus:ring-brand-gold outline-none">
+                    {% for val, label in order.Status.choices %}
+                    {% if order.status == val %}
+                    <option value="{{ val }}" selected>
+                        {{ label }}
+                    </option>
+                    {% else %}
+                    <option value="{{ val }}">
+                        {{ label }}
+                    </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit"
+                    class="w-full bg-brand-gold text-white font-bold uppercase tracking-widest py-4 text-xs rounded-xl hover:bg-brand-wood transition-colors">
+                    Оновити статус
+                </button>
+            </form>
+
+            <div class="mt-10 pt-8 border-t border-white/5">
+                <a href="{% url 'crm:order_confirm_delete' order.pk %}"
+                    class="w-full flex items-center justify-center space-x-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
+                    <span>Видалити замовлення</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Меблі Івано-Франківськ{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-24 min-h-screen">
+    <div class="container mx-auto px-6">
+        <!-- Breadcrumbs -->
+        <nav class="flex mb-8 text-sm uppercase tracking-widest text-gray-400">
+            <a href="{% url 'catalog:category_list' %}" class="hover:text-brand-gold">Каталог</a>
+            <span class="mx-2">/</span>
+            <span class="text-brand-charcoal font-bold">{{ category.name }}</span>
+        </nav>
+
+        <h1 class="text-4xl md:text-5xl font-serif font-bold mb-12">{{ category.name }}</h1>
+
+        <!-- Subcategories -->
+        {% if subcategories %}
+        <div class="mb-20">
+            <h2
+                class="text-xl font-bold uppercase tracking-widest mb-8 text-brand-gold border-b border-brand-gold/20 pb-2">
+                Підкатегорії</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {% for sub in subcategories %}
+                <a href="{% url 'catalog:category_detail' sub.slug %}"
+                    class="group relative aspect-video overflow-hidden bg-brand-charcoal">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-charcoal/80 to-transparent z-10"></div>
+                    {% if sub.image %}
+                    <img src="{{ sub.image.url }}" alt="{{ sub.name }}"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    {% else %}
+                    <div class="absolute inset-0 bg-brand-wood flex items-center justify-center opacity-40">
+                        <span class="text-2xl text-white font-serif">{{ sub.name|slice:":1" }}</span>
+                    </div>
+                    {% endif %}
+                    <div
+                        class="absolute bottom-6 left-6 z-20 transition-transform duration-500 group-hover:-translate-y-1">
+                        <h3 class="text-white text-xl font-serif font-bold">{{ sub.name }}</h3>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Products -->
+        <div>
+            <h2
+                class="text-xl font-bold uppercase tracking-widest mb-8 text-brand-charcoal border-b border-gray-200 pb-2">
+                Товари</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for product in products %}
+                <div class="group bg-white flex flex-col">
+                    <a href="{% url 'catalog:product_detail' product.slug %}"
+                        class="aspect-[4/5] bg-brand-cream overflow-hidden relative block">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-brand-gold opacity-20 text-6xl">
+                            🛋️</div>
+                        {% endif %}
+
+                        {% if product.is_customizable %}
+                        <div
+                            class="absolute top-4 right-4 bg-brand-gold text-white text-[10px] font-bold uppercase px-2 py-1 tracking-tighter">
+                            На замовлення</div>
+                        {% endif %}
+
+                        <div
+                            class="absolute inset-0 bg-brand-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span
+                                class="bg-white text-brand-charcoal px-6 py-2 text-xs font-bold uppercase tracking-widest">Переглянути</span>
+                        </div>
+                    </a>
+                    <div class="py-6 flex flex-col flex-grow">
+                        <h3 class="font-serif text-lg font-bold mb-2 group-hover:text-brand-gold transition-colors">
+                            <a href="{% url 'catalog:product_detail' product.slug %}">{{ product.name }}</a>
+                        </h3>
+                        <div class="mt-auto">
+                            <div class="text-gray-500 text-sm mt-2">ВІД {{ product.base_price }} ₴</div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full py-12 text-center text-gray-400 italic">
+                    У цій категорії поки немає товарів.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

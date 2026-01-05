@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="uk" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Меблі Івано-Франківськ{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            wood: '#4A3728',
+                            charcoal: '#1A1A1A',
+                            cream: '#F5F5F0',
+                            gold: '#C5A059',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-brand-cream text-brand-charcoal overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-3xl font-serif font-bold text-brand-wood tracking-widest leading-none">ReST<span
+                    class="text-brand-gold">.IF</span></a>
+
+            <div class="hidden md:flex space-x-8 font-medium uppercase text-[10px] tracking-[0.3em]">
+                <a href="{% url 'core:home' %}" class="hover:text-brand-gold transition-colors">Головна</a>
+                <a href="{% url 'core:home' %}#catalog" class="hover:text-brand-gold transition-colors">Каталог</a>
+                <a href="{% url 'core:home' %}#gallery" class="hover:text-brand-gold transition-colors">Галерея</a>
+                <a href="{% url 'core:home' %}#reviews" class="hover:text-brand-gold transition-colors">Відгуки</a>
+                <a href="{% url 'core:home' %}#contacts"
+                    class="hover:text-brand-gold transition-colors text-brand-gold">Контакти</a>
+            </div>
+
+            <button class="md:hidden text-brand-charcoal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="contacts" class="bg-brand-charcoal text-gray-300 py-16">
+        <div class="container mx-auto px-6 grid md:grid-cols-3 gap-12">
+            <div>
+                <h3 class="text-3xl font-serif font-bold text-white mb-6">ReST.IF</h3>
+                <p class="mb-6 opacity-60">Ексклюзивні меблі для вашого комфорту. Майстерня індивідуальних рішень у м.
+                    Івано-Франківськ.</p>
+                <div class="flex space-x-4">
+                    {% if settings.instagram_url %}
+                    <a href="{{ settings.instagram_url }}" class="hover:text-white"><svg class="w-6 h-6"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c.796 0 1.441.645 1.441 1.44s-.645 1.44-1.441 1.44c-.795 0-1.439-.645-1.439-1.44s.644-1.44 1.439-1.44z" />
+                        </svg></a>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6">Контакти</h4>
+                <ul class="space-y-4 opacity-60">
+                    <li>📍 {{ settings.address|default:"м. Івано-Франківськ" }}</li>
+                    <li>📞 {{ settings.contact_phone }}</li>
+                    <li>⏰ {{ settings.working_hours }}</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6">Швидкі посилання</h4>
+                <ul class="space-y-4 opacity-60">
+                    <li><a href="#catalog" class="hover:text-white">Каталог</a></li>
+                    <li><a href="#gallery" class="hover:text-white">Галерея</a></li>
+                    <li><a href="#reviews" class="hover:text-white">Відгуки</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            class="container mx-auto px-6 mt-16 pt-8 border-t border-white/5 text-center text-sm opacity-40 uppercase tracking-widest">
+            &copy; 2026 ReST.IF. Всі права захищені.
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
