@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'apps.crm',
     'apps.seo',
     'apps.core',
+
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -147,5 +150,9 @@ CKEDITOR_CONFIGS = {
 CSRF_TRUSTED_ORIGINS = [
     'https://*.trycloudflare.com',
     'https://*.up.railway.app',
+    'https://furniturestore-production-abbc.up.railway.app',
 ]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
