@@ -1,7 +1,8 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['yourdomain.com']  # Change this in production
+ALLOWED_HOSTS = ['furniturestore-production-abbc.up.railway.app',
+    '.up.railway.app',]  # Change this in production
 
 # Security settings
 SECURE_SSL_REDIRECT = True
